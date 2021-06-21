@@ -1,35 +1,15 @@
 const express = require("express");
 const app = express();
+const Game = require("./Game");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-var DB = {
-  games: [
-    {
-      id: 23,
-      title: "Call of duty MW",
-      year: 2019,
-      price: 60
-    },
-    {
-      id: 65,
-      title: "GTA V",
-      year: 2013,
-      price: 40
-    },
-    {
-      id: 2,
-      title: "Warface",
-      year: 2013,
-      price: 10
-    }
-  ]
-}
-
 app.get("/games", (req, res) => {
   res.statusCode = 200;
-  res.json(DB.games);
+  Game.findAll().then(games => {
+    res.json(games);
+  });
 });
 
 app.get("/game/:id", (req, res) => {
@@ -37,24 +17,30 @@ app.get("/game/:id", (req, res) => {
     res.sendStatus(400);
   }else{
     var id = parseInt(req.params.id);
-    var game = DB.games.find(g => g.id == id);
-
-    if(game != undefined){
-      res.statusCode = 200;
-      res.json(game);
-    }else{
+    Game.findByPk(id).then(game => {
+      if(game != undefined) {
+            res.statusCode = 200;
+            res.json(game);
+      }else{
+        res.sendStatus(404);
+      }
+    }).catch(err => {
       res.sendStatus(404);
-    }
+    });
   }
 });
 
 app.post("/game", (req, res) => {
   var { title, price, year } = req.body; 
-  DB.games.push({
-    id: 2323,
+
+  Game.create({
     title,
     price,
     year
+  }).then(() => {
+    res.sendStatus(200);
+  }).catch(() => {
+    res.sendStatus(404);
   });
 });
 
@@ -63,14 +49,19 @@ app.delete("/game/:id", (req, res) => {
     res.sendStatus(400);
   }else{
     var id = parseInt(req.params.id);
-    var index = DB.games.findIndex(g => g.id == id);
-
-    if(index == -1){
+    Game.findByPk(id).then(game => {
+      if(game != undefined) {
+        Game.destroy({
+          where: { id: id }
+        }).then(() => {
+          res.sendStatus(200);
+        });
+      }else{
+        res.sendStatus(404);
+      }
+    }).catch(err => {
       res.sendStatus(404);
-    }else{
-      DB.games.splice(index,1);
-      res.sendStatus(200);
-    }
+    });
   }
 }); 
 
@@ -79,30 +70,26 @@ app.put("/game/:id", (req, res) => {
     res.sendStatus(400);
   }else{
     var id = parseInt(req.params.id);
-    var game = DB.games.find(g => g.id == id);
-
-    if(game != undefined){
-      var { title, price, year } = req.body;
-
-      if(title != undefined){
-        game.title = title;
+    Game.findByPk(id).then(game => {
+      if(game != undefined) {
+        var { title, price, year } = req.body;  
+          
+          Game.update({ title: title, price: price, year: year }, {
+            where: { id: id }
+          }).then(() => {
+            res.sendStatus(200);
+          }).catch(err => {
+            res.sendStatus(404);
+          } );
+      }else{
+        res.sendStatus(404);
       }
-
-      if(price != undefined){
-        game.price = price;
-      }
-
-      if(year != undefined){
-        game.year = year;
-      }
-
-      res.sendStatus(200);
-    }else{
+    }).catch(err => {
       res.sendStatus(404);
-    }
+    });
   }
 });
 
 app.listen(45678, () => {
   console.log("API RODANDO!");
-})
+});
