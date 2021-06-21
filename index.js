@@ -50,7 +50,6 @@ app.get("/game/:id", (req, res) => {
 
 app.post("/game", (req, res) => {
   var { title, price, year } = req.body; 
-
   DB.games.push({
     id: 2323,
     title,
@@ -58,6 +57,22 @@ app.post("/game", (req, res) => {
     year
   });
 });
+
+app.delete("/game/:id", (req, res) => {
+  if(isNaN(req.params.id)){
+    res.sendStatus(400);
+  }else{
+    var id = parseInt(req.params.id);
+    var index = DB.games.findIndex(g => g.id == id);
+
+    if(index == -1){
+      res.sendStatus(404);
+    }else{
+      DB.games.splice(index,1);
+      res.sendStatus(200);
+    }
+  }
+}); 
 
 app.listen(45678, () => {
   console.log("API RODANDO!");
