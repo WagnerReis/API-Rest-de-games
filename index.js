@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const Game = require("./Game");
+const User = require("./User");
 const cors = require("cors");
 
 app.use(cors());
@@ -90,6 +91,59 @@ app.put("/game/:id", (req, res) => {
     }).catch(err => {
       res.sendStatus(404);
     });
+  }
+});
+
+app.get("/users", (req, res) => {
+  User.findAll().then( users => {
+    res.json(users);
+  });
+});
+
+app.post("/users/create", (req, res) => {
+  var { name, email, password } = req.body;
+
+  User.findOne({where:{email: email}}).then( user => {
+    if(user == undefined){
+      User.create({
+        name: name,
+        email: email,
+        password: password
+      }).then(() => {
+        res.sendStatus(200);
+      }).catch(() => {
+        res.sendStatus(400);
+      });
+    }else{
+      res.sendStatus(404);
+    }
+  });
+});
+
+app.post("/auth",(req, res) => {
+  var { email, password } = req.body;
+
+  if(email != undefined){
+    var user = User.findOne({ where: {
+      email: email
+    }});
+
+    if(user != undefined){
+
+      if(user.password == password){
+        res.status = 200;
+        res.json({token: "TOKEN FALSO "});
+      }else{
+        res.status = 401;
+        res.json({ err: "Credenciais inválidas!"});
+      }
+    }else{
+      res.status = 404;
+      res.json({ err: "O E-mail enviado não existe na base de dados!"});
+    }
+  }else{
+    res.status = 400;
+    res.json({ err: "O E-mail enviado é inválido"});
   }
 });
 
