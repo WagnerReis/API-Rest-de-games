@@ -5,6 +5,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loja de games</title>
+
+  <h2>Login</h2>
+  <input type="text" name="email" id="email" placeholder="Exemplo@email.com"><br>
+  <input type="password" name="password" id="password" placeholder="**********">
+  <button onclick="login()">Entrar</button>
+
   <hr>
   <h4>Lista de games</h4>
   <ul id="games"></ul>
@@ -27,6 +33,24 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+
+  function login(){
+    var emailField = document.getElementById("email");
+    var passwordField = document.getElementById("password");
+
+    var email = emailField.value;
+    var password = passwordField.value;
+
+    axios.post("http://localhost:45678/auth",{
+      email,
+      password
+    }).then(res => {
+      var token = res.data.token;
+      alert("Login efetuado com sucesso!");
+    }).catch(err => {
+      alert("Login incorreto...");
+    });
+  }
 
   var axiosConfig = {
     headers: {
