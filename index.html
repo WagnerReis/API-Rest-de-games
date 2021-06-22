@@ -34,6 +34,12 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 
+  var axiosConfig = {
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("token")
+    }
+  }
+
   function login(){
     var emailField = document.getElementById("email");
     var passwordField = document.getElementById("password");
@@ -46,16 +52,11 @@
       password
     }).then(res => {
       var token = res.data.token;
-      alert("Login efetuado com sucesso!");
+      localStorage.setItem("token", token);
+      axiosConfig.headers.Authorization = "Bearer " + localStorage.getItem("token");
     }).catch(err => {
       alert("Login incorreto...");
     });
-  }
-
-  var axiosConfig = {
-    headers: {
-      Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ3YWduZXJAZW1haWwuY29tIiwiaWF0IjoxNjI0Mzc5NTY2LCJleHAiOjE2MjQ1NTIzNjZ9.Dz62z-D_gyz-jo5JP8z3tofGRbujGz3LaNfZ3x6ZIUc"
-    }
   }
 
   function createGame(){
@@ -69,7 +70,7 @@
       price: priceInput.value
     }
     
-    axios.post("http://localhost:45678/game", game).then( response => {
+    axios.post("http://localhost:45678/game", game, axiosConfig).then( response => {
       if(response.status == 200){
         alert("Game cadastrado!");
       }
@@ -80,7 +81,7 @@
 
   function deleteGame(listItem){
     var id = listItem.getAttribute("data-id");
-    axios.delete("http://localhost:45678/game/"+id).then(response => {
+    axios.delete("http://localhost:45678/game/"+id, axiosConfig).then(response => {
       alert("Game deletado!");
     }).catch(err => { 
       console.log(err);
@@ -112,7 +113,7 @@
 
     var id = idInput.value;
     
-    axios.put("http://localhost:45678/game/"+id, game).then( response => {
+    axios.put("http://localhost:45678/game/"+id, game, axiosConfig).then( response => {
       if(response.status == 200){
         alert("Game atualizado!");
       }
