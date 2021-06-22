@@ -28,6 +28,12 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 
+  var axiosConfig = {
+    headers: {
+      Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ3YWduZXJAZW1haWwuY29tIiwiaWF0IjoxNjI0Mzc5NTY2LCJleHAiOjE2MjQ1NTIzNjZ9.Dz62z-D_gyz-jo5JP8z3tofGRbujGz3LaNfZ3x6ZIUc"
+    }
+  }
+
   function createGame(){
     var titleInput = document.getElementById("title");
     var yearInput = document.getElementById("year");
@@ -91,7 +97,7 @@
     })
   }
 
-  axios.get("http://localhost:45678/games").then(response => {
+  axios.get("http://localhost:45678/games", axiosConfig).then(response => {
     var games = response.data;
     var list = document.getElementById("games");
 
