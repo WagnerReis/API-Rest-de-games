@@ -1,4 +1,5 @@
-#API de Games
+# API de Games
+
 Esta API é utilizada em uma loja de games.
 ##Endpoints
 ### GET /games
