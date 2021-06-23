@@ -46,10 +46,33 @@ app.get("/game/:id", auth, (req, res) => {
     res.sendStatus(400);
   }else{
     var id = parseInt(req.params.id);
+
+    var HATEOAS = [
+      {
+        href: "http://localhost:456789/game/"+id,
+        method: "DELETE",
+        rel: "delete_game"
+      },
+      {
+        href: "http://localhost:456789/game/"+id,
+        method: "PUT",
+        rel: "edit_game"
+      },
+      {
+        href: "http://localhost:456789/game/"+id,
+        method: "GET",
+        rel: "get_game"
+      },
+      {
+        href: "http://localhost:456789/game/",
+        method: "GET",
+        rel: "get_all_games"
+      },
+    ]
     Game.findByPk(id).then(game => {
       if(game != undefined) {
             res.statusCode = 200;
-            res.json(game);
+            res.json({game, _links: HATEOAS});
       }else{
         res.sendStatus(404);
       }
@@ -99,6 +122,7 @@ app.put("/game/:id", auth, (req, res) => {
     res.sendStatus(400);
   }else{
     var id = parseInt(req.params.id);
+
     Game.findByPk(id).then(game => {
       if(game != undefined) {
         var { title, price, year } = req.body;  
@@ -145,7 +169,7 @@ app.post("/users/create", auth, (req, res) => {
   });
 });
 
-app.post("/auth", auth, (req, res) => {
+app.post("/auth", (req, res) => {
   var { email, password } = req.body;
 
   if(email != undefined){
