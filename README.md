@@ -1,7 +1,8 @@
 # API de Games
 
 Esta API é utilizada em uma loja de games.
-##Endpoints
+
+## Endpoints
 ### GET /games
 Esse endpoint é responsavel por retornar a listagem de todos os games cadastrados no banco de dados.
 #### Parametros
